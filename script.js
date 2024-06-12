@@ -1,77 +1,102 @@
-const displayTextElement = document.getElementById('display-text');
-const typingArea = document.getElementById('typing-area');
-const timerElement = document.getElementById('timer');
-const wpmElement = document.getElementById('wpm');
-const accuracyElement = document.getElementById('accuracy');
-const resultsElement = document.getElementById('results');
+import { fetchRandomText } from './text.js';
+
+const textDisplay = document.getElementById('textDisplay');
+const textInput = document.getElementById('textInput');
+const timerDisplay = document.getElementById('timer');
+const wpmDisplay = document.getElementById('wpm');
+const accuracyDisplay = document.getElementById('accuracy');
+const resetButton = document.getElementById('resetButton');
 
 let timer;
 let startTime;
-let totalCharsTyped = 0;
-let correctCharsTyped = 0;
+let isRunning = false;
 let textToType = '';
+let typedCharacters = 0;
+let correctCharacters = 0;
+let hasStartedTyping = false;
 
-// Fetch text from public API or local JSON
-async function fetchText() {
-  const response = await fetch('https://api.quotable.io/random');
-  const data = await response.json();
-  textToType = data.content;
-  displayText();
+async function startTypingTest() {
+    textToType = await fetchRandomText();
+    textDisplay.textContent = textToType;
+    textInput.value = '';
+    textInput.disabled = false;
+    textInput.focus();
+    hasStartedTyping = false;
+    timerDisplay.textContent = 'Time: 60';
+    wpmDisplay.textContent = 'WPM: 0';
+    accuracyDisplay.textContent = 'Accuracy: 0%';
+    clearInterval(timer);
+    isRunning = false;
 }
 
-function displayText() {
-  displayTextElement.innerText = textToType;
-}
-
-function startTyping() {
-  if (!timer) {
-    startTime = Date.now();
+function startTimer() {
+    startTime = new Date().getTime();
+    isRunning = true;
     timer = setInterval(updateTimer, 1000);
-  }
 }
 
 function updateTimer() {
-  const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
-  const remainingTime = 60 - elapsedTime;
-  timerElement.textContent = remainingTime;
+    const currentTime = new Date().getTime();
+    const timeElapsed = Math.floor((currentTime - startTime) / 1000);
+    const timeLeft = 60 - timeElapsed;
+    timerDisplay.textContent = `Time: ${timeLeft}`;
 
-  if (remainingTime <= 0) {
-    clearInterval(timer);
-    endTest();
-  }
-}
-
-function endTest() {
-  typingArea.disabled = true;
-  const wordsTyped = totalCharsTyped / 5;
-  const minutes = 60 / 60;
-  const wpm = (wordsTyped / minutes).toFixed(2);
-  const accuracy = ((correctCharsTyped / totalCharsTyped) * 100).toFixed(2);
-
-  wpmElement.textContent = wpm;
-  accuracyElement.textContent = accuracy;
-  resultsElement.style.display = 'block';
-}
-
-typingArea.addEventListener('input', (e) => {
-  startTyping();
-  const typedText = typingArea.value;
-  totalCharsTyped = typedText.length;
-
-  let displayedText = '';
-  for (let i = 0; i < textToType.length; i++) {
-    if (i < typedText.length) {
-      if (typedText[i] === textToType[i]) {
-        displayedText += `<span class="correct">${textToType[i]}</span>`;
-        correctCharsTyped++;
-      } else {
-        displayedText += `<span class="incorrect">${textToType[i]}</span>`;
-      }
-    } else {
-      displayedText += textToType[i];
+    if (timeLeft <= 0) {
+        clearInterval(timer);
+        endTypingTest();
     }
-  }
-  displayTextElement.innerHTML = displayedText;
+}
+
+function endTypingTest() {
+    isRunning = false;
+    textInput.disabled = true;
+    calculateResults();
+}
+
+function calculateResults() {
+    const wordsTyped = typedCharacters / 5;
+    const timeElapsed = (new Date().getTime() - startTime) / 60000;
+    const wpm = Math.round(wordsTyped / timeElapsed);
+    const accuracy = Math.round((correctCharacters / typedCharacters) * 100);
+
+    wpmDisplay.textContent = `WPM: ${wpm}`;
+    accuracyDisplay.textContent = `Accuracy: ${accuracy}%`;
+}
+
+textInput.addEventListener('input', () => {
+    if (!isRunning && !hasStartedTyping) {
+        startTimer();
+        hasStartedTyping = true;
+    }
+
+    const typedText = textInput.value;
+    typedCharacters = typedText.length;
+    correctCharacters = 0;
+
+    const displayText = textToType.split('').map((char, index) => {
+        if (typedText[index] === char) {
+            correctCharacters++;
+            return `<span class="correct">${char}</span>`;
+        } else if (typedText[index] === undefined) {
+            return `<span>${char}</span>`;
+        } else {
+            return `<span class="incorrect">${char}</span>`;
+        }
+    }).join('');
+
+    textDisplay.innerHTML = displayText;
+
+    calculateResults();
 });
 
-fetchText();
+resetButton.addEventListener('click', startTypingTest);
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        startTypingTest();
+    } else if (e.key === 'Escape') {
+        startTypingTest();
+    }
+});
+
+export { startTypingTest };

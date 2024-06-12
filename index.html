@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Typing Speed Test</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Speed Test</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="app">
-    <h1>Typing Speed Test</h1>
-    <div id="text-container">
-      <p id="display-text"></p>
+    <div class="container">
+        <h1>Typing Speed Test</h1>
+        <div id="textDisplay">Loading...</div>
+        <textarea id="textInput" placeholder="Start typing here..." disabled></textarea>
+        <div id="timer">Time: 60</div>
+        <div id="results">
+            <p id="wpm">WPM: 0</p>
+            <p id="accuracy">Accuracy: 0%</p>
+        </div>
+        <button id="resetButton">Reset</button>
+        <canvas id="metricsChart"></canvas>
     </div>
-    <textarea id="typing-area" placeholder="Start typing here..."></textarea>
-    <div id="timer">60</div>
-    <div id="results">
-      <p>Words per minute: <span id="wpm"></span></p>
-      <p>Accuracy: <span id="accuracy"></span>%</p>
-    </div>
-  </div>
-  <script src="script.js"></script>
+    <script type="module" src="main.js"></script>
 </body>
 </html>
