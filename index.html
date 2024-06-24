@@ -8,16 +8,20 @@
 </head>
 <body>
     <div class="container">
-        <h1>Typing Speed Test</h1>
-        <div id="textDisplay">Loading...</div>
-        <textarea id="textInput" placeholder="Start typing here..." disabled></textarea>
-        <div id="timer">Time: 60</div>
-        <div id="results">
-            <p id="wpm">WPM: 0</p>
-            <p id="accuracy">Accuracy: 0%</p>
+        <div class="test-section">
+            <h1>Typing Speed Test</h1>
+            <div id="textDisplay">Loading...</div>
+            <textarea id="textInput" placeholder="Start typing here..." disabled></textarea>
+            <div id="timer">Time: 60</div>
+            <div id="results">
+                <p id="wpm">WPM: 0</p>
+                <p id="accuracy">Accuracy: 0%</p>
+            </div>
+            <button id="resetButton">Reset</button>
+            <button id="statsButton">View Statistics</button>
+            <button id="clearStatsButton">Clear Statistics</button>
         </div>
-        <button id="resetButton">Reset</button>
-        <canvas id="metricsChart"></canvas>
+        <div id="statsDisplay" class="stats-display"></div>
     </div>
     <script type="module" src="main.js"></script>
 </body>

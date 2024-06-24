@@ -6,6 +6,9 @@ const timerDisplay = document.getElementById('timer');
 const wpmDisplay = document.getElementById('wpm');
 const accuracyDisplay = document.getElementById('accuracy');
 const resetButton = document.getElementById('resetButton');
+const statsButton = document.getElementById('statsButton');
+const statsDisplay = document.getElementById('statsDisplay');
+const clearStatsButton = document.getElementById('clearStatsButton');
 
 let timer;
 let startTime;
@@ -18,6 +21,10 @@ let hasStartedTyping = false;
 async function startTypingTest() {
     textToType = await fetchRandomText();
     textDisplay.textContent = textToType;
+    resetGameState();
+}
+
+function resetGameState() {
     textInput.value = '';
     textInput.disabled = false;
     textInput.focus();
@@ -27,6 +34,8 @@ async function startTypingTest() {
     accuracyDisplay.textContent = 'Accuracy: 0%';
     clearInterval(timer);
     isRunning = false;
+    typedCharacters = 0;
+    correctCharacters = 0;
 }
 
 function startTimer() {
@@ -61,6 +70,33 @@ function calculateResults() {
 
     wpmDisplay.textContent = `WPM: ${wpm}`;
     accuracyDisplay.textContent = `Accuracy: ${accuracy}%`;
+
+    saveStatistics(wpm, accuracy);
+}
+
+function saveStatistics(wpm, accuracy) {
+    const stats = getStatistics();
+    stats.push({ wpm, accuracy, date: new Date().toLocaleString() });
+    localStorage.setItem('typingTestStats', JSON.stringify(stats));
+}
+
+function getStatistics() {
+    const stats = localStorage.getItem('typingTestStats');
+    return stats ? JSON.parse(stats) : [];
+}
+
+function displayStatistics() {
+    const stats = getStatistics();
+    statsDisplay.innerHTML = stats.map(stat => {
+        return `<div>Date: ${stat.date}, WPM: ${stat.wpm}, Accuracy: ${stat.accuracy}%</div>`;
+    }).join('');
+
+    statsDisplay.classList.toggle('hidden');
+}
+
+function clearStatistics() {
+    localStorage.removeItem('typingTestStats');
+    statsDisplay.innerHTML = '';
 }
 
 textInput.addEventListener('input', () => {
@@ -85,15 +121,23 @@ textInput.addEventListener('input', () => {
     }).join('');
 
     textDisplay.innerHTML = displayText;
+});
 
-    calculateResults();
+textInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        resetGameState();
+    }
 });
 
 resetButton.addEventListener('click', startTypingTest);
+statsButton.addEventListener('click', displayStatistics);
+clearStatsButton.addEventListener('click', clearStatistics);
 
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
-        startTypingTest();
+        e.preventDefault();
+        resetGameState();
     } else if (e.key === 'Escape') {
         startTypingTest();
     }
