@@ -9,14 +9,14 @@ body {
 }
 
 .container {
-  background-image: url(how-to-type-faster-1200x628.png) ;
+  background-image: url(how-to-type-faster-1200x628.png);
   background-size: cover;
   background-position: center;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
   width: 80%;
-  max-width: 1200px;
+  height: 80%;
   display: flex;
   justify-content: space-between;
 }
@@ -32,11 +32,11 @@ body {
 
 #textDisplay {
   width: 100%;
-  margin-bottom: 5px;
+  margin-bottom: 20px;
   padding: 10px;
   border: 1px solid #ccc;
-  height: 130px;
-  overflow-y: scroll;
+  height: 170px;
+  overflow-y: hidden;
   white-space: pre-wrap;
   background: #f9f9f9;
   text-align: left;
@@ -54,10 +54,10 @@ textarea {
 }
 
 #wpm, #accuracy, #timer {
-  margin: 5px;
+  margin: 7px;
   font-size: 25px;
   font-weight: bold;
-  color: rgb(72, 192, 156);
+  color: rgb(0, 0, 0);
 }
 
 .correct {
@@ -77,19 +77,12 @@ textarea {
   background-color: black;
   border: none;
   padding: 10px 20px;
-  margin-top: 5px;
+  margin-top: 10px;
   border-radius: 5px;
   cursor: pointer;
 }
 
-#resetButton:hover {
-  background-color: gray;
-}
-#clearStatsButton:hover {
-  background-color: gray;
-}
-
-#statsButton:hover {
+#resetButton:hover, #statsButton:hover, #clearStatsButton:hover {
   background-color: gray;
 }
 
@@ -99,18 +92,21 @@ textarea {
   border: 1px solid #ccc;
   border-radius: 10px;
   padding: 10px;
-  max-height: 500px; /* Adjust height as needed */
+  max-height: 600px; /* Adjust height as needed */
   overflow-y: auto;
 }
 
-.stats-display div {
-  border-bottom: 1px solid #ccc;
-  padding: 5px 0;
+.stats-display table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.stats-display div:last-child {
-  border-bottom: none;
+.stats-display th, .stats-display td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
 }
 
-
-
+.stats-display th {
+  background-color: #f2f2f2;
+}

@@ -1,4 +1,5 @@
 import { fetchRandomText } from './text.js';
+import { TIMER_DURATION } from './config.js';
 
 const textDisplay = document.getElementById('textDisplay');
 const textInput = document.getElementById('textInput');
@@ -29,7 +30,7 @@ function resetGameState() {
     textInput.disabled = false;
     textInput.focus();
     hasStartedTyping = false;
-    timerDisplay.textContent = 'Time: 60';
+    timerDisplay.textContent = `Time: ${TIMER_DURATION}`;
     wpmDisplay.textContent = 'WPM: 0';
     accuracyDisplay.textContent = 'Accuracy: 0%';
     clearInterval(timer);
@@ -47,7 +48,7 @@ function startTimer() {
 function updateTimer() {
     const currentTime = new Date().getTime();
     const timeElapsed = Math.floor((currentTime - startTime) / 1000);
-    const timeLeft = 60 - timeElapsed;
+    const timeLeft = TIMER_DURATION - timeElapsed;
     timerDisplay.textContent = `Time: ${timeLeft}`;
 
     if (timeLeft <= 0) {
@@ -78,6 +79,7 @@ function saveStatistics(wpm, accuracy) {
     const stats = getStatistics();
     stats.push({ wpm, accuracy, date: new Date().toLocaleString() });
     localStorage.setItem('typingTestStats', JSON.stringify(stats));
+    updateStatsDisplay();
 }
 
 function getStatistics() {
@@ -86,12 +88,32 @@ function getStatistics() {
 }
 
 function displayStatistics() {
-    const stats = getStatistics();
-    statsDisplay.innerHTML = stats.map(stat => {
-        return `<div>Date: ${stat.date}, WPM: ${stat.wpm}, Accuracy: ${stat.accuracy}%</div>`;
-    }).join('');
-
     statsDisplay.classList.toggle('hidden');
+    updateStatsDisplay();
+}
+
+function updateStatsDisplay() {
+    const stats = getStatistics();
+    statsDisplay.innerHTML = `
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>WPM</th>
+                    <th>Accuracy</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${stats.map(stat => `
+                    <tr>
+                        <td>${stat.date}</td>
+                        <td>${stat.wpm}</td>
+                        <td>${stat.accuracy}%</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
 }
 
 function clearStatistics() {
@@ -127,6 +149,7 @@ textInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
         e.preventDefault();
         resetGameState();
+        textDisplay.innerHTML = textToType.split('').map(char => `<span>${char}</span>`).join('');
     }
 });
 
@@ -138,6 +161,7 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
         e.preventDefault();
         resetGameState();
+        textDisplay.innerHTML = textToType.split('').map(char => `<span>${char}</span>`).join('');
     } else if (e.key === 'Escape') {
         startTypingTest();
     }
